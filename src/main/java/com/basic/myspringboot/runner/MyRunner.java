@@ -30,7 +30,7 @@ public class MyRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        system.out.println("현재 활성화된 CustomerVO = " + CustomerVO);
+        System.out.println("현재 활성화된 CustomerVO = " + customerVO);
 
         System.out.println("MyBootProperties getName() = " + properties.getName());
 
