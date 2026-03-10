@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
+//@Transactional
 class CustomerRepositoryTest {
     @Autowired
     CustomerRepository customerRepository;
@@ -39,8 +39,42 @@ class CustomerRepositoryTest {
     //2. Customer 조회
     @Test
     void testFindBy() {
-        Optional<Customer> optionalCustomer = customerRepository.findById(2L);
+        Optional<Customer> optionalCustomer = customerRepository.findById(1L);
+        if(optionalCustomer.isPresent()) {
+            Customer customer = optionalCustomer.get();
+            assertThat(customer.getId()).isEqualTo(1L);
+        }else{
+            System.out.println("Customer Not Found");
+        }
+        //ifPresent(Consumer)
+        //Consumer의 추상메서드는 void accept(T t)
+        optionalCustomer.ifPresent(customer -> System.out.println(customer.getCustomerName()));
 
+    }
 
+    @Test
+    @Disabled
+    void testFindByNotFound() {
+        //orElseGet(Supplier)
+        //Supplier의 추상메서드는 T get()
+        Customer existCustomer = customerRepository.findById(2L)
+                .orElseGet(() -> new Customer());
+        assertThat(existCustomer.getId()).isNull();
+        //assertThat(existCustomer.getId()).isEqualTo(2L);
+
+        //public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier)
+        Customer notFoundCustomer = customerRepository.findById(2L)
+                .orElseThrow(() -> new RuntimeException("Customer Not Found"));
+    }
+
+    @Test
+        //@Rollback(value = false)
+    void testUpdate() {
+        //조회를 하고 setter 호출하면 업데이트 됨
+        Customer customer = customerRepository.findByCustomerId("A002")
+                .orElseThrow(() -> new RuntimeException("Customer Not Found"));
+        customer.setCustomerName("스프링부트22");
+        customerRepository.save(customer);
+        assertThat(customer.getCustomerName()).isEqualTo("스프링부트22");
     }
 }
