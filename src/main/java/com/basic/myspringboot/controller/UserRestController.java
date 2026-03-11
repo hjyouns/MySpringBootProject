@@ -43,16 +43,14 @@ public class UserRestController {
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
-        User existUser = optionalUser //Optional<User>
-                .orElseThrow(() -> new BusinessException("User Not Found", HttpStatus.NOT_FOUND));//User
+        User existUser = getExistUser(optionalUser);
         return existUser;
     }
 
     //Email 조회하고 User 수정하기
     @PatchMapping("/{email}/")
     public User updateUser(@PathVariable String email, @RequestBody User userDetail){
-        User existUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException("User Not Found", HttpStatus.NOT_FOUND));
+        User existUser = getExistUser(userRepository.findByEmail(email));
         existUser.setName(userDetail.getName());
         return userRepository.save(existUser);
     }
@@ -61,10 +59,15 @@ public class UserRestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
-        User user = optionalUser
-                .orElseThrow(() -> new BusinessException("User Not Found", HttpStatus.NOT_FOUND));
+        User user = getExistUser(optionalUser);
         userRepository.delete(user);
-        //return ResponseEntity.ok(user);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Id = " + id + " User가 삭제 되었습니다.");
     }
+    //private 공통 메서드
+    private static User getExistUser(Optional<User> optionalUser) {
+        User existUser = optionalUser //Optional<User>
+                .orElseThrow(() -> new BusinessException("User Not Found", HttpStatus.NOT_FOUND));//User
+        return existUser;
+    }
+
 }
