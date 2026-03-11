@@ -1,32 +1,12 @@
-package com.basic.myspringboot.controller;
+package com.basic.myspringboot.repository;
 
 import com.basic.myspringboot.entity.User;
-import com.basic.myspringboot.repository.CustomerRepository;
-import com.basic.myspringboot.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@RestController
-@Slf4j
-@RequiredArgsConstructor
-@RequestMapping("/api/users")
-public class UserRestController {
-    private final UserRepository userRepository;
+import java.util.List;
+import java.util.Optional;
 
-    //Constructor Injection
-//    public UserRestController(UserRepository userRepository) {
-//        log.info("UserRepository 구현클래스명 = {}",userRepository.getClass().getName());
-//        this.userRepository = userRepository;
-//    }
-
-    //User 등록
-    @PostMapping
-    public User create(@RequestBody User userDetail) {
-        return userRepository.save(userDetail);
-    }
+public interface UserRepository extends JpaRepository<User,Long> {
+    List<User> findByNameContains(String name);
+    Optional<User> findByEmail(String email);
 }
